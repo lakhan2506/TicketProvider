@@ -1,0 +1,21 @@
+*{
+    box-sizing: border-box;
+}
+
+.loginButton{
+    cursor: pointer;
+    font:inherit;
+    border: none;
+    background-color: rgb(83, 23, 23);
+    color: white;
+    font-size: 25px;
+    font-weight: 200;
+    margin-right: 30px;
+    padding: 8px 25px;
+    border-radius: 10px;
+}
+
+.loginButton:hover,
+.loginButton:active {
+  background-color: #2c0d00;
+}

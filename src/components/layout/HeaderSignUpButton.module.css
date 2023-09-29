@@ -1,0 +1,20 @@
+*{
+    box-sizing: border-box;
+}
+
+.signUpButton{
+    cursor: pointer;
+    font:inherit;
+    border: none;
+    background-color: rgb(83, 23, 23);
+    color: white;
+    font-size: 25px;
+    font-weight: 200;
+    padding: 8px 25px;
+    border-radius: 10px;
+}
+
+.signUpButton:hover,
+.signUpButton:active {
+  background-color: #2c0d00;
+}
