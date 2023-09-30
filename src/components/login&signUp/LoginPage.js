@@ -4,22 +4,29 @@ import useInput from "../hooks/use-input";
 import SignUpPage from "./SignUpPage";
 import useHttp from "../hooks/use-http";
 import Header from "../layout/Header";
+import AdminLoginPage from "../admin/admin login & signup page/AdminLoginPage";
 
 const LoginPage = (props) => {
   const [userLoginCompleted,setUserLoginCompleted] = useState(false);
   const [dontHaveAccount, setDontHaveAccount] = useState(false);
+  const [adminLogin,setAdminLogin] = useState(false);
   const { isLoading, error, sendRequest: sendNewUserRequest } = useHttp();
 
 
   const logingHandler = async () => {
     const createUser = (userData) => {
       // console.log(JSON.stringify(userData));
-      const createdUser = {message:userData.message,token:userData.token};
-      // console.log(createdUser.message);
-      localStorage.setItem('LoginToken',JSON.stringify(createdUser.token));
-      const storageEvent = new StorageEvent('storage',{key:createdUser.token})
-      window.dispatchEvent(storageEvent) ; 
-      if(createdUser.message === 'User Login'){
+      // let token = ''
+      userData.json().then((data)=>{
+        // console.log(userDataJson)
+        const createdUser = {token:data.token};
+        // console.log(createdUser.message);
+        localStorage.setItem('LoginToken',JSON.stringify(createdUser.token));
+        const storageEvent = new StorageEvent('storage',{key:createdUser.token})
+        window.dispatchEvent(storageEvent) ; 
+      });
+      // console.log(token);
+      if(userData.status === 200){
         setUserLoginCompleted(true);
       }
       else{
@@ -100,6 +107,10 @@ const LoginPage = (props) => {
     setDontHaveAccount(true);
   };
 
+  const goToAdminPageHandler=()=>{
+    setAdminLogin(true)
+  }
+
   const loginContent = (
     <section className="container forms">
       <div className="form login">
@@ -143,12 +154,19 @@ const LoginPage = (props) => {
               <button disabled={!formIsValid}>Login</button>
             </div>
           </form>
-
           <div className="form-link">
             <span>
               Don't have an account?{" "}
               <button onClick={goOnSignUpPage} className="button">
                 Signup
+              </button>
+            </span>
+          </div>
+          <div className="form-link">
+            <span>
+              For Admin Login?{" "}
+              <button onClick={goToAdminPageHandler} className="button">
+                Admin Login
               </button>
             </span>
           </div>
@@ -159,13 +177,16 @@ const LoginPage = (props) => {
 
   return (
     <Fragment>
-      {dontHaveAccount&& !userLoginCompleted && (
+      {!adminLogin &&dontHaveAccount&& !userLoginCompleted && (
         <SignUpPage />
       )}
-      {!dontHaveAccount && userLoginCompleted && (
+      {!adminLogin && !dontHaveAccount && userLoginCompleted && (
         <Header/>
       )}
-      {!dontHaveAccount&& !userLoginCompleted && loginContent}
+      {adminLogin && !dontHaveAccount && !userLoginCompleted && (
+        <AdminLoginPage/>
+      )}
+      {!adminLogin && !dontHaveAccount&& !userLoginCompleted && loginContent}
     </Fragment>
   );
 };

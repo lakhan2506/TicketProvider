@@ -1,48 +1,41 @@
 import React, { Fragment, useState } from "react";
-import useInput from "../hooks/use-input";
-import "./SignUpPage.css";
-import LoginPage from "./LoginPage";
-import useHttp from "../hooks/use-http";
+import useInput from '../../hooks/use-input';
+import "./AdminSignUpPage.css";
+import AdminLoginPage from './AdminLoginPage';
+import useHttp from "../../hooks/use-http";
 
-const SignUpPage = (props) => {
+const AdminSignUpPage = (props) => {
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
-  const [userRegistered,setUserRegistered] = useState(false)
-  const { isLoading, error, sendRequest: sendNewUserRequest } = useHttp();
+  const [adminRegistered,setAdminRegistered] = useState(false)
+  const { isLoading, error, sendRequest: sendNewAdminRequest } = useHttp();
 
   const enterTaskHandler = async () => {
-    const createUser = (userData) => {
-      if(userData.status === 200){
-        setUserRegistered(true)
+    const createAdmin = (adminData) => {
+      if(adminData.status === 200){
+        setAdminRegistered(true)
       }
     };
-      sendNewUserRequest(
+      sendNewAdminRequest(
         {
-          url: "http://127.0.0.1:8080/register",
+          url: "http://127.0.0.1:8080/admin/register",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json, text/plain, */*",
           },
-          body: JSON.stringify(newUserDetails),
+          body: JSON.stringify(newAdminDetails),
         },
-        createUser
+        createAdmin
       );
     
   };
-  const {
-    value: enteredName,
-    hasError: isNameInputHasError,
-    valueChangeHandler: nameChangeHandler,
-    inputBlurHandler: nameBlurHandler,
-    reset: resetNameInput,
-  } = useInput();
 
   const {
-    value: enteredUserName,
-    hasError: isUserNameInputHasError,
-    valueChangeHandler: userNameChangeHandler,
-    inputBlurHandler: userNameBlurHandler,
-    reset: resetUserNameInput,
+    value: enteredAdminName,
+    hasError: isAdminNameInputHasError,
+    valueChangeHandler: adminNameChangeHandler,
+    inputBlurHandler: adminNameBlurHandler,
+    reset: resetAdminNameInput,
   } = useInput();
 
   const {
@@ -53,20 +46,14 @@ const SignUpPage = (props) => {
     reset: resetPasswordInput,
   } = useInput();
 
-  const newUserDetails = {
-    name: enteredName,
-    username: enteredUserName,
+  const newAdminDetails = {
+    username: enteredAdminName,
     password: enteredPassword,
   };
 
-  let nameIsValid = false;
-  if (enteredName.trim() !== "") {
-    nameIsValid = true;
-  }
-
-  let userNameIsValid = false;
-  if (enteredUserName.length >= 6) {
-    userNameIsValid = true;
+  let adminNameIsValid = false;
+  if (enteredAdminName.length >= 6) {
+    adminNameIsValid = true;
   }
 
   let passwordIsValid = false;
@@ -76,7 +63,7 @@ const SignUpPage = (props) => {
 
   let formIsValid = false;
 
-  if (passwordIsValid && nameIsValid && userNameIsValid) {
+  if (passwordIsValid && adminNameIsValid) {
     formIsValid = true;
   }
 
@@ -84,8 +71,7 @@ const SignUpPage = (props) => {
     setAlreadyRegistered(true);
   };
 
-  const nameInputHasError = !nameIsValid && isNameInputHasError;
-  const userNameInputHasError = !userNameIsValid && isUserNameInputHasError;
+  const adminNameInputHasError = !adminNameIsValid && isAdminNameInputHasError;
   const passwordInputHasError = !passwordIsValid && isPasswordInputHasError;
 
   const submitHandler = (event) => {
@@ -96,59 +82,41 @@ const SignUpPage = (props) => {
 
     enterTaskHandler();
 
-    resetNameInput();
-    resetUserNameInput();
+    resetAdminNameInput();
     resetPasswordInput();
   };
 
-  const nameClasses = nameInputHasError
-    ? "field input-field invalid"
-    : "field input-field";
-  const userNameClasses = userNameInputHasError
+  const adminNameClasses = adminNameInputHasError
     ? "field input-field invalid"
     : "field input-field";
   const passwordClasses = passwordInputHasError
     ? "field input-field invalid"
     : "field input-field";
 
-  const signUpContent = (
+  const AdminSignUpContent = (
     <section className="container forms">
       <div className="form login">
         <div className="form-content">
-          <header>Signup</header>
+          <header>Admin Signup</header>
           <form onSubmit={submitHandler}>
             {isLoading && <p>sending...</p>}
             {error && <p>{error}</p>}
-            {userRegistered && <p>User Registered</p>}
-            <div className={nameClasses}>
-              <input
-                type="text"
-                placeholder="Name"
-                className="input"
-                onChange={nameChangeHandler}
-                onBlur={nameBlurHandler}
-                value={enteredName}
-                required
-              />
-              {nameInputHasError && (
-                <p className="error-text">Please enter your name.</p>
-              )}
-            </div>
+            {adminRegistered && <p>Admin Registered</p>}
 
-            <div className={userNameClasses}>
+            <div className={adminNameClasses}>
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="user name"
                 className="password"
-                onChange={userNameChangeHandler}
-                onBlur={userNameBlurHandler}
-                value={enteredUserName}
+                onChange={adminNameChangeHandler}
+                onBlur={adminNameBlurHandler}
+                value={enteredAdminName}
                 required
               />
               <i className="bx bx-hide eye-icon"></i>
-              {userNameInputHasError && (
+              {adminNameInputHasError && (
                 <p className="error-text">
-                  Please enter more then 6 digit username
+                  Please enter more then 6 digit user name
                 </p>
               )}
             </div>
@@ -172,7 +140,7 @@ const SignUpPage = (props) => {
 
             <div className="field button-field">
               <button type="submit" disabled={!formIsValid}>
-                Signup
+                Admin Signup
               </button>
             </div>
           </form>
@@ -181,7 +149,7 @@ const SignUpPage = (props) => {
             <span>
               Already have an account?{" "}
               <button className="button" onClick={goOnLoginPagehandler}>
-                Login
+                Admin Login
               </button>
             </span>
           </div>
@@ -193,14 +161,14 @@ const SignUpPage = (props) => {
   return (
     <Fragment>
       {alreadyRegistered && (
-        <LoginPage />
+        <AdminLoginPage />
       )}
-      {userRegistered && (
-        <LoginPage />
+      {adminRegistered && (
+        <AdminLoginPage />
       )}
-      {!alreadyRegistered && signUpContent}
+      {!alreadyRegistered && AdminSignUpContent}
     </Fragment>
   );
 };
 
-export default SignUpPage;
+export default AdminSignUpPage;

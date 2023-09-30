@@ -7,20 +7,20 @@ function App(props) {
   const [UserLogin, setUserLogin] = useState(null);
   // added line for git push
   // added line for vs code
-  // const token = localStorage.getItem("LoginToken");
-  // const isUserLoggedIn = () => {
-  //   if (!token) {
-  //     setUserLogin(false);
-  //   } else {
-  //     setUserLogin(true);
-  //   }
-  // };
+  const token = localStorage.getItem("LoginToken");
+  const isUserLoggedIn = () => {
+    if (!token) {
+      setUserLogin(false);
+    } else {
+      setUserLogin(true);
+    }
+  };
   // const removeTokenHandler=(data)=>{
-  //   setUserLogin(data)
+  //   setUserLogin(data) 
   // }
 
   useEffect(() => {
-    // isUserLoggedIn();
+    isUserLoggedIn();
     window.addEventListener('storage',(event)=>{
       // console.log("Storage Event Detected",event);
       // console.log("Event Key",event.key);
