@@ -1,45 +1,53 @@
-import React, { useEffect } from "react";
-import { Fragment, useState } from "react";
-import Header from "./components/layout/Header";
+import { useEffect, useCallback, useState, Fragment } from "react";
 import LoginPage from "./components/login&signUp/LoginPage";
+import AdminPortal from "./components/admin/adminPortal/AdminPortal";
+import AddVenueForm from "./components/venue/AddVenueForm";
 
 function App(props) {
-  const [UserLogin, setUserLogin] = useState(null);
-  // added line for git push
-  // added line for vs code
+  const [userLogin, setUserLogin] = useState(null);
+  const [isClickOnAddVenueButton,setIsClickOnAddVenueButton] = useState(false)
   const token = localStorage.getItem("LoginToken");
-  const isUserLoggedIn = () => {
+
+  const isUserLoggedIn = useCallback(() => {
     if (!token) {
       setUserLogin(false);
     } else {
       setUserLogin(true);
     }
-  };
-  // const removeTokenHandler=(data)=>{
-  //   setUserLogin(data) 
-  // }
+  }, [token]);
 
   useEffect(() => {
     isUserLoggedIn();
-    window.addEventListener('storage',(event)=>{
-      // console.log("Storage Event Detected",event);
-      // console.log("Event Key",event.key);
-      if(event.key!==null){
+
+    const handleStorageChange = (event) => {
+      if (event.key !== null) {
         setUserLogin(true);
-      }
-      else{
+      } else {
         setUserLogin(false);
       }
-    });
-    //return ()=>window.removeEventListener('storage',handleStorage())
-  },[]);
+    };
 
+    window.addEventListener("storage", handleStorageChange);
 
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [isUserLoggedIn]);
+
+  const clickOnAddVenueButton = (data)=>{
+    if(data===true){
+      setIsClickOnAddVenueButton(true);
+    }
+    else{
+      setIsClickOnAddVenueButton(false)
+    }
+  }
 
   return (
     <Fragment>
-      {UserLogin && <Header  />}
-      {!UserLogin && <LoginPage />}
+      {!isClickOnAddVenueButton && userLogin && <AdminPortal clickOnAddVenueButton={clickOnAddVenueButton} />}
+      {isClickOnAddVenueButton && userLogin && <AddVenueForm clickOnAddVenueButton={clickOnAddVenueButton}/>}
+      {!isClickOnAddVenueButton && !userLogin && <LoginPage />}
     </Fragment>
   );
 }

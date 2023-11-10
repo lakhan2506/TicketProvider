@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import classes from "./Header.module.css";
 
 
@@ -24,7 +24,6 @@ const Header = (props) => {
         <div > 
           <button className={classes.logoutButton} onClick={logoutHandler}>Logout</button>
         </div>
-        
       </header>
     </Fragment>
   );

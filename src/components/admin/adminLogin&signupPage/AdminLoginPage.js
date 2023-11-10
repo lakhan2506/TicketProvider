@@ -1,35 +1,48 @@
-import React, { Fragment, useState } from "react";
-import useInput from '../../hooks/use-input';
-import "./AdminSignUpPage.css";
-import AdminLoginPage from './AdminLoginPage';
-import useHttp from "../../hooks/use-http";
+import { Fragment, useState } from "react";
+import "./AdminLoginPage.css";
+import useInput from "../../hooks/use-input";
+import AdminSignUpPage from "./AdminSignUpPage";
+import useHttp from '../../hooks/use-http';
+import AdminPortal from '../adminPortal/AdminPortal'
 
-const AdminSignUpPage = (props) => {
-  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
-  const [adminRegistered,setAdminRegistered] = useState(false)
+const AdminLoginPage = (props) => {
+  const [adminLoginCompleted,setAdminLoginCompleted] = useState(false);
+  const [dontHaveAccount, setDontHaveAccount] = useState(false);
   const { isLoading, error, sendRequest: sendNewAdminRequest } = useHttp();
 
-  const enterTaskHandler = async () => {
+
+  const logingHandler = async () => {
     const createAdmin = (adminData) => {
+      // console.log(JSON.stringify(adminData));\
+      adminData.json().then((data)=>{
+        const createdAdmin = {token:data.token};
+        // console.log(createdAdmin.message);
+        localStorage.setItem('LoginToken',createdAdmin.token);
+        const storageEvent = new StorageEvent('storage',{key:createdAdmin.token})
+        window.dispatchEvent(storageEvent) ; 
+      })
       if(adminData.status === 200){
-        setAdminRegistered(true)
+        setAdminLoginCompleted(true);
       }
+      else{
+        setAdminLoginCompleted(false);
+      }    
     };
-      sendNewAdminRequest(
-        {
-          url: "http://127.0.0.1:8080/admin/register",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json, text/plain, */*",
-          },
-          body: JSON.stringify(newAdminDetails),
+    sendNewAdminRequest(
+      {
+        url: "http://127.0.0.1:8080/admin/login",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json, text/plain, */*",
         },
-        createAdmin
-      );
-    
+        body: JSON.stringify(adminDetails),
+      },
+      createAdmin
+    );
   };
 
+  
   const {
     value: enteredAdminName,
     hasError: isAdminNameInputHasError,
@@ -37,7 +50,7 @@ const AdminSignUpPage = (props) => {
     inputBlurHandler: adminNameBlurHandler,
     reset: resetAdminNameInput,
   } = useInput();
-
+  
   const {
     value: enteredPassword,
     hasError: isPasswordInputHasError,
@@ -45,12 +58,12 @@ const AdminSignUpPage = (props) => {
     inputBlurHandler: passwordBlurHandler,
     reset: resetPasswordInput,
   } = useInput();
-
-  const newAdminDetails = {
+  
+  const adminDetails = {
     username: enteredAdminName,
     password: enteredPassword,
-  };
-
+  }
+  
   let adminNameIsValid = false;
   if (enteredAdminName.length >= 6) {
     adminNameIsValid = true;
@@ -62,26 +75,18 @@ const AdminSignUpPage = (props) => {
   }
 
   let formIsValid = false;
-
   if (passwordIsValid && adminNameIsValid) {
     formIsValid = true;
   }
-
-  const goOnLoginPagehandler = () => {
-    setAlreadyRegistered(true);
-  };
 
   const adminNameInputHasError = !adminNameIsValid && isAdminNameInputHasError;
   const passwordInputHasError = !passwordIsValid && isPasswordInputHasError;
 
   const submitHandler = (event) => {
     event.preventDefault();
-    if (!formIsValid) {
-      return;
-    }
 
-    enterTaskHandler();
-
+    logingHandler();
+    
     resetAdminNameInput();
     resetPasswordInput();
   };
@@ -93,31 +98,30 @@ const AdminSignUpPage = (props) => {
     ? "field input-field invalid"
     : "field input-field";
 
-  const AdminSignUpContent = (
+  const goOnSignUpPage = () => {
+    setDontHaveAccount(true);
+  };
+
+  const adminLoginContent = (
     <section className="container forms">
       <div className="form login">
         <div className="form-content">
-          <header>Admin Signup</header>
+          <header>Admin Login</header>
           <form onSubmit={submitHandler}>
             {isLoading && <p>sending...</p>}
             {error && <p>{error}</p>}
-            {adminRegistered && <p>Admin Registered</p>}
-
             <div className={adminNameClasses}>
               <input
                 type="text"
                 placeholder="user name"
-                className="password"
+                className="input"
                 onChange={adminNameChangeHandler}
                 onBlur={adminNameBlurHandler}
                 value={enteredAdminName}
                 required
               />
-              <i className="bx bx-hide eye-icon"></i>
               {adminNameInputHasError && (
-                <p className="error-text">
-                  Please enter more then 6 digit user name
-                </p>
+                <p className="error-text">Please enter your admin name.</p>
               )}
             </div>
 
@@ -132,24 +136,21 @@ const AdminSignUpPage = (props) => {
                 required
               />
               <i className="bx bx-hide eye-icon"></i>
-              {passwordInputHasError && !passwordIsValid && (
+              {passwordInputHasError && (
                 <p className="error-text">Please enter 6 digit password</p>
               )}
             </div>
-            <div></div>
 
             <div className="field button-field">
-              <button type="submit" disabled={!formIsValid}>
-                Admin Signup
-              </button>
+              <button disabled={!formIsValid}>Login</button>
             </div>
           </form>
 
           <div className="form-link">
             <span>
-              Already have an account?{" "}
-              <button className="button" onClick={goOnLoginPagehandler}>
-                Admin Login
+              Don't have an account?{" "}
+              <button onClick={goOnSignUpPage} className="button">
+                Admin Signup
               </button>
             </span>
           </div>
@@ -160,15 +161,15 @@ const AdminSignUpPage = (props) => {
 
   return (
     <Fragment>
-      {alreadyRegistered && (
-        <AdminLoginPage />
+      {dontHaveAccount&& !adminLoginCompleted && (
+        < AdminSignUpPage />
       )}
-      {adminRegistered && (
-        <AdminLoginPage />
+      {!dontHaveAccount && adminLoginCompleted && (
+        <AdminPortal/>
       )}
-      {!alreadyRegistered && AdminSignUpContent}
+      {!dontHaveAccount&& !adminLoginCompleted && adminLoginContent}
     </Fragment>
   );
 };
 
-export default AdminSignUpPage;
+export default AdminLoginPage;

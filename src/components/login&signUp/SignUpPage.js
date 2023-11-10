@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import useInput from "../hooks/use-input";
 import "./SignUpPage.css";
 import LoginPage from "./LoginPage";
@@ -168,7 +168,6 @@ const SignUpPage = (props) => {
                 <p className="error-text">Please enter 6 digit password</p>
               )}
             </div>
-            <div></div>
 
             <div className="field button-field">
               <button type="submit" disabled={!formIsValid}>

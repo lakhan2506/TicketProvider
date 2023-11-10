@@ -1,0 +1,11 @@
+*{
+    box-sizing: border-box;
+}
+
+.header{
+    position: relative;
+}
+.vanues{
+    position: absolute;
+    top: 90px;
+}

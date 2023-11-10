@@ -1,10 +1,10 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import "./LoginPage.css";
 import useInput from "../hooks/use-input";
 import SignUpPage from "./SignUpPage";
 import useHttp from "../hooks/use-http";
-import Header from "../layout/Header";
-import AdminLoginPage from "../admin/admin login & signup page/AdminLoginPage";
+import AdminLoginPage from "../admin/adminLogin&signupPage/AdminLoginPage";
+import AdminPortal from "../admin/adminPortal/AdminPortal";
 
 const LoginPage = (props) => {
   const [userLoginCompleted,setUserLoginCompleted] = useState(false);
@@ -181,7 +181,7 @@ const LoginPage = (props) => {
         <SignUpPage />
       )}
       {!adminLogin && !dontHaveAccount && userLoginCompleted && (
-        <Header/>
+        <AdminPortal/>
       )}
       {adminLogin && !dontHaveAccount && !userLoginCompleted && (
         <AdminLoginPage/>
