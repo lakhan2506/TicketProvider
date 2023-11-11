@@ -1,14 +1,21 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import classes from "./Venues.module.css";
 import Venue from "./Venue";
+import { TfiReload } from "react-icons/tfi";
+import { fetchVenues } from "../store/venue-slice";
 
 const Venues = (props) => {
   const venues = useSelector((state) => state.venue.venues);
   const noOfShows = useSelector((state) => state.venue.noOfShows);
+  const dispatch = useDispatch();
 
   const addVenueHandler = () => {
     props.clickOnAddVenueButton(true);
   };
+
+  const reloadVenuesHandler=()=>{
+    dispatch(fetchVenues())
+  }
 
   return (
     <div className={classes.container}>
@@ -16,7 +23,8 @@ const Venues = (props) => {
         <div>
           <h1>Venues</h1>
         </div>
-        <div>
+        <div className={classes.buttons}>
+          <button onClick={reloadVenuesHandler} className={classes.reloadButton}><TfiReload size={25}/></button>
           <button onClick={addVenueHandler} className={classes.addVenueButton}>
             Add Venue
           </button>
@@ -25,7 +33,8 @@ const Venues = (props) => {
       <div className={classes.venue}>
         {venues.map((item) => (
           <Venue
-            key={item.name}
+            key={item.id}
+            id={item.id}
             name={item.name}
             place={item.place}
             capacity={item.capacity}

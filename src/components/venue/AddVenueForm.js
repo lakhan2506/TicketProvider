@@ -5,6 +5,7 @@ import { useState } from "react";
 import AdminPortal from "../admin/adminPortal/AdminPortal";
 import { venueActions } from "../store/venue-slice";
 import { useDispatch } from "react-redux";
+import { fetchVenues } from "../store/venue-slice";
 
 const AddVenueForm = (props) => {
   const { isLoading, error, sendRequest: sendNewUserRequest } = useHttp();
@@ -12,7 +13,7 @@ const AddVenueForm = (props) => {
   const token = localStorage.getItem("LoginToken");
   const dispatch = useDispatch();
 
-  const enterTaskHandler = async () => {
+  const addVenuesHandler = async () => {
     const addVenue = (addVenueData) => {
       if (addVenueData.status === 200) {
         setIsAddVenueCompleted(true)
@@ -37,7 +38,7 @@ const AddVenueForm = (props) => {
       },
       addVenue
     );
-    
+    dispatch(fetchVenues())
   };
   const {
     value: enteredVenueName,
@@ -100,7 +101,7 @@ const AddVenueForm = (props) => {
       return;
     }
 
-    enterTaskHandler();
+    addVenuesHandler();
     props.clickOnAddVenueButton(false);
 
     resetVenueNameInput();

@@ -46,3 +46,14 @@
   height: auto;
   overflow-wrap:break-word;
 }
+
+.reloadButton{
+  border: none;
+  background-color: white;
+  padding: 4px;
+  border-radius: 4px;
+  margin-right: 30px;
+  cursor: pointer;
+}
+
+
