@@ -3,11 +3,17 @@ import classes from "./Venues.module.css";
 import Venue from "./Venue";
 import { TfiReload } from "react-icons/tfi";
 import { fetchVenues } from "../store/venue-slice";
+import { useEffect } from "react";
+
 
 const Venues = (props) => {
   const venues = useSelector((state) => state.venue.venues);
   const noOfShows = useSelector((state) => state.venue.noOfShows);
   const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(fetchVenues())
+  },[dispatch])
 
   const addVenueHandler = () => {
     props.clickOnAddVenueButton(true);
@@ -34,6 +40,8 @@ const Venues = (props) => {
         {venues.map((item) => (
           <Venue
             key={item.id}
+            venueId = {props.venueId}
+            venueEditting={props.venueEditting}
             id={item.id}
             name={item.name}
             place={item.place}

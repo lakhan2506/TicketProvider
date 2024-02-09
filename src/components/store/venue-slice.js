@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-const token = localStorage.getItem("LoginToken");
+import { adminActions } from "./admin-slice";
 
 // Define an asynchronous thunk for fetching venues
-export const fetchVenues = createAsyncThunk("venue/fetchVenues", async () => {
+export const fetchVenues = createAsyncThunk("venue/fetchVenues", async (_, { dispatch }) => {
   try {
+    const token = GetToken();
+    if (!token) {
+      // window.location.reload();
+      dispatch(adminActions.adminLoginData(false));
+      return Promise.reject("No token available");
+    }
+
     const response = await fetch("http://127.0.0.1:8080/venue/getAllVenues", {
       method: "GET",
       headers: {
@@ -12,6 +18,7 @@ export const fetchVenues = createAsyncThunk("venue/fetchVenues", async () => {
         "Content-Type": "application/json",
       },
     });
+
     const data = await response.json();
     return data; // Assuming the response is an array of venues
   } catch (error) {
@@ -20,6 +27,22 @@ export const fetchVenues = createAsyncThunk("venue/fetchVenues", async () => {
     throw error;
   }
 });
+
+const GetToken=()=>{
+  const token = localStorage.getItem('token');
+  const expirationTime = localStorage.getItem('expirationTime');
+  if(!token || !expirationTime){
+    return null;
+  }
+  const currentTimestamp = new Date().getTime();
+
+  if(currentTimestamp > parseInt(expirationTime,10)){
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationTime');
+    return null;
+  }
+  return token;
+}
 
 const venueSlice = createSlice({
   name: "venue",

@@ -6,7 +6,8 @@ const Header = (props) => {
   // let istokendeleted = null;
   const logoutHandler=()=>{
     // console.log(token);
-    localStorage.removeItem('LoginToken')
+    localStorage.removeItem('token')
+    localStorage.removeItem('expirationTime')
     // const token = localStorage.getItem('LoginToken');
     // console.log(localStorage.getItem('LoginToken'))
     const storageEvent = new StorageEvent('storage',{key:null})

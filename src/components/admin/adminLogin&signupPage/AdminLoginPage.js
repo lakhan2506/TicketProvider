@@ -2,31 +2,37 @@ import { Fragment, useState } from "react";
 import "./AdminLoginPage.css";
 import useInput from "../../hooks/use-input";
 import AdminSignUpPage from "./AdminSignUpPage";
-import useHttp from '../../hooks/use-http';
-import AdminPortal from '../adminPortal/AdminPortal'
+import useHttp from "../../hooks/use-http";
+import AdminPortal from "../adminPortal/AdminPortal";
 
 const AdminLoginPage = (props) => {
-  const [adminLoginCompleted,setAdminLoginCompleted] = useState(false);
+  const [adminLoginCompleted, setAdminLoginCompleted] = useState(false);
   const [dontHaveAccount, setDontHaveAccount] = useState(false);
   const { isLoading, error, sendRequest: sendNewAdminRequest } = useHttp();
-
 
   const logingHandler = async () => {
     const createAdmin = (adminData) => {
       // console.log(JSON.stringify(adminData));\
-      adminData.json().then((data)=>{
-        const createdAdmin = {token:data.token};
+      adminData.json().then((data) => {
+        const createdAdmin = { token: data.token };
         // console.log(createdAdmin.message);
-        localStorage.setItem('LoginToken',createdAdmin.token);
-        const storageEvent = new StorageEvent('storage',{key:createdAdmin.token})
-        window.dispatchEvent(storageEvent) ; 
-      })
-      if(adminData.status === 200){
+        // localStorage.setItem('LoginToken',createdAdmin.token);
+
+        const expirationTime = new Date();
+        expirationTime.setMinutes(expirationTime.getMinutes() + 480);
+
+        localStorage.setItem("token", createdAdmin.token);
+        localStorage.setItem("expirationTime", expirationTime.getTime());
+        const storageEvent = new StorageEvent("storage", {
+          key: createdAdmin.token,
+        });
+        window.dispatchEvent(storageEvent);
+      });
+      if (adminData.status === 200) {
         setAdminLoginCompleted(true);
-      }
-      else{
+      } else {
         setAdminLoginCompleted(false);
-      }    
+      }
     };
     sendNewAdminRequest(
       {
@@ -42,7 +48,6 @@ const AdminLoginPage = (props) => {
     );
   };
 
-  
   const {
     value: enteredAdminName,
     hasError: isAdminNameInputHasError,
@@ -50,7 +55,7 @@ const AdminLoginPage = (props) => {
     inputBlurHandler: adminNameBlurHandler,
     reset: resetAdminNameInput,
   } = useInput();
-  
+
   const {
     value: enteredPassword,
     hasError: isPasswordInputHasError,
@@ -58,12 +63,12 @@ const AdminLoginPage = (props) => {
     inputBlurHandler: passwordBlurHandler,
     reset: resetPasswordInput,
   } = useInput();
-  
+
   const adminDetails = {
     username: enteredAdminName,
     password: enteredPassword,
-  }
-  
+  };
+
   let adminNameIsValid = false;
   if (enteredAdminName.length >= 6) {
     adminNameIsValid = true;
@@ -86,7 +91,7 @@ const AdminLoginPage = (props) => {
     event.preventDefault();
 
     logingHandler();
-    
+
     resetAdminNameInput();
     resetPasswordInput();
   };
@@ -161,13 +166,9 @@ const AdminLoginPage = (props) => {
 
   return (
     <Fragment>
-      {dontHaveAccount&& !adminLoginCompleted && (
-        < AdminSignUpPage />
-      )}
-      {!dontHaveAccount && adminLoginCompleted && (
-        <AdminPortal/>
-      )}
-      {!dontHaveAccount&& !adminLoginCompleted && adminLoginContent}
+      {dontHaveAccount && !adminLoginCompleted && <AdminSignUpPage />}
+      {!dontHaveAccount && adminLoginCompleted && <AdminPortal />}
+      {!dontHaveAccount && !adminLoginCompleted && adminLoginContent}
     </Fragment>
   );
 };

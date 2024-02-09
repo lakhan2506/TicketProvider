@@ -1,11 +1,11 @@
 
-
+/* 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-  }
+  } */
   .container {
     height: 100vh;
     width: 100%;
@@ -80,8 +80,8 @@
     text-align: center;
     margin-top: 10px;
   }
-  .form-link span,
-  .form-link a {
+  /* .form-link span,
+  /* .form-link a {
     font-size: 14px;
     font-weight: 400;
     color: #232836;
@@ -92,7 +92,7 @@
   }
   .form-content a:hover {
     text-decoration: underline;
-  }
+  } */ */
   .line {
     position: relative;
     height: 1px;
@@ -155,9 +155,10 @@
   }
   
   .button{
-      cursor: pointer;
+    display: flex;
+    cursor: pointer;
     border: none;
     color: blue;
     background-color: white;
+    text-align: center;
   }
-  

@@ -7,7 +7,7 @@ const AdminPortal = (props) => {
   return (
     <Fragment>
       <div className="header"><Header/></div>
-      <div className="vanues"><Venues clickOnAddVenueButton={props.clickOnAddVenueButton} /></div>
+      <div className="vanues"><Venues venueId = {props.venueId} venueEditting={props.venueEditting} clickOnAddVenueButton={props.clickOnAddVenueButton} /></div>
     </Fragment>
   );
 };

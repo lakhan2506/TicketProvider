@@ -2,28 +2,58 @@ import { useEffect, useCallback, useState, Fragment } from "react";
 import LoginPage from "./components/login&signUp/LoginPage";
 import AdminPortal from "./components/admin/adminPortal/AdminPortal";
 import AddVenueForm from "./components/venue/AddVenueForm";
+import { useDispatch, useSelector } from "react-redux";
+import { adminActions } from "./components/store/admin-slice";
 
 function App(props) {
-  const [userLogin, setUserLogin] = useState(null);
+  // const [userLogin, setUserLogin] = useState(null);
   const [isClickOnAddVenueButton,setIsClickOnAddVenueButton] = useState(false)
-  const token = localStorage.getItem("LoginToken");
+  const [isEditting,setIsEditting] = useState(false);
+  
+  const [venueId,setVenueId] = useState()
+  const dispatch = useDispatch();
+  const userLogin = useSelector((state) => state.admin.adminLogin);
 
+  const GetToken=()=>{
+    const token = localStorage.getItem('token');
+    const expirationTime = localStorage.getItem('expirationTime');
+    if(!token || !expirationTime){
+      return null;
+    }
+    const currentTimestamp = new Date().getTime();
+  
+    if(currentTimestamp > parseInt(expirationTime,10)){
+      localStorage.removeItem('token');
+      localStorage.removeItem('expirationTime');
+      return null;
+    }
+    return token;
+  }
+  const token = GetToken();
+  
+  const venueIdtHandler=(data)=>{
+    setVenueId(data)
+  }
   const isUserLoggedIn = useCallback(() => {
     if (!token) {
-      setUserLogin(false);
+      // setUserLogin(false);
+      dispatch(adminActions.adminLoginData(false))
     } else {
-      setUserLogin(true);
+      // setUserLogin(true);
+      dispatch(adminActions.adminLoginData(true))
     }
-  }, [token]);
+  },[dispatch, token]);
 
   useEffect(() => {
     isUserLoggedIn();
-
+    console.log(userLogin)
     const handleStorageChange = (event) => {
       if (event.key !== null) {
-        setUserLogin(true);
+        // setUserLogin(true);
+        dispatch(adminActions.adminLoginData(true))
       } else {
-        setUserLogin(false);
+        // setUserLogin(false);
+        dispatch(adminActions.adminLoginData(false))
       }
     };
 
@@ -32,7 +62,7 @@ function App(props) {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [isUserLoggedIn]);
+  });
 
   const clickOnAddVenueButton = (data)=>{
     if(data===true){
@@ -43,11 +73,17 @@ function App(props) {
     }
   }
 
+  const venueEditHandler=(data)=>{
+    setIsEditting(data)
+  }
+
+
   return (
     <Fragment>
-      {!isClickOnAddVenueButton && userLogin && <AdminPortal clickOnAddVenueButton={clickOnAddVenueButton} />}
-      {isClickOnAddVenueButton && userLogin && <AddVenueForm clickOnAddVenueButton={clickOnAddVenueButton}/>}
-      {!isClickOnAddVenueButton && !userLogin && <LoginPage />}
+      {!isClickOnAddVenueButton && !isEditting && userLogin && <AdminPortal venueId = {venueIdtHandler} venueEditting={venueEditHandler} clickOnAddVenueButton={clickOnAddVenueButton} />}
+      {isClickOnAddVenueButton && !isEditting && userLogin && <AddVenueForm venueId = {venueId} editting={isEditting} clickOnAddVenueButton={clickOnAddVenueButton}/>}
+      {!isClickOnAddVenueButton &&!isEditting && !userLogin && <LoginPage />}
+      {!isClickOnAddVenueButton && isEditting && userLogin && <AddVenueForm venueId = {venueId} editting={isEditting} venueEditting={venueEditHandler} clickOnAddVenueButton={clickOnAddVenueButton}/>}
     </Fragment>
   );
 }
